@@ -1,0 +1,37 @@
+{
+  "doc_id": "concert_festival",
+  "event_type": ["Concert", "Music Festival", "Show âm nhạc sinh viên"],
+  "context_tags": ["outdoor", "night_event", "sound_stage", "vip", "security"],
+  "baseline_tasks": [
+    {
+      "name": "Sân khấu & Âm thanh ánh sáng",
+      "owner_department": "Hậu cần",
+      "notes": "Thuê sân khấu, kỹ thuật âm thanh, ánh sáng và setup tổng thể."
+    },
+    {
+      "name": "Truyền thông & KOL",
+      "owner_department": "Media",
+      "notes": "Lên kế hoạch truyền thông, hợp tác KOL/DJ, trailer video."
+    },
+    {
+      "name": "Đối ngoại & Nghệ sĩ",
+      "owner_department": "Đối ngoại",
+      "notes": "Liên hệ và ký hợp đồng với ca sĩ, DJ, khách mời đặc biệt."
+    },
+    {
+      "name": "An ninh & Vé vào cổng",
+      "owner_department": "Hậu cần",
+      "notes": "Phối hợp bảo vệ, kiểm soát vé và crowd control."
+    },
+    {
+      "name": "Xin duyệt IC-PDP & PCCC",
+      "owner_department": "BTC/IC",
+      "notes": "Chuẩn bị hồ sơ, giấy phép âm thanh công cộng, và phương án an toàn."
+    },
+    {
+      "name": "Nội dung chương trình & MC",
+      "owner_department": "Nội dung",
+      "notes": "Xây timeline biểu diễn, script MC, và các phân đoạn sân khấu."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "doc_id": "workshop_ai",
+  "event_type": ["Workshop", "Seminar", "Buổi chia sẻ học thuật"],
+  "context_tags": ["indoor", "no_sponsor", "academic"],
+  "baseline_tasks": [
+    {
+      "name": "Truyền thông & Media",
+      "owner_department": "Media",
+      "notes": "Thiết kế poster đơn giản, tạo link đăng ký, bài đăng trên fanpage."
+    },
+    {
+      "name": "Chuẩn bị phòng & thiết bị",
+      "owner_department": "Hậu cần",
+      "notes": "Kiểm tra máy chiếu, âm thanh, laptop, micro."
+    },
+    {
+      "name": "Đăng ký & Check-in",
+      "owner_department": "Hậu cần",
+      "notes": "Chuẩn bị form đăng ký, bàn tiếp đón và QR check-in."
+    },
+    {
+      "name": "Xin duyệt IC-PDP",
+      "owner_department": "BTC/IC",
+      "notes": "Nộp hồ sơ sự kiện nội bộ theo quy trình FPTU."
+    },
+    {
+      "name": "Nội dung & MC",
+      "owner_department": "Nội dung",
+      "notes": "Viết agenda, chọn diễn giả, chuẩn bị script và câu hỏi thảo luận."
+    }
+  ]
+}

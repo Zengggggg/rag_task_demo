@@ -1,0 +1,37 @@
+{
+  "doc_id": "career_fair",
+  "event_type": ["Career Fair", "Ngày hội việc làm", "Job Fair"],
+  "context_tags": ["outdoor", "sponsor", "vip"],
+  "baseline_tasks": [
+    {
+      "name": "Truyền thông & Media",
+      "owner_department": "Media",
+      "notes": "Thiết kế poster, bài đăng mạng xã hội, livestream sự kiện."
+    },
+    {
+      "name": "Đối ngoại & Nhà tài trợ",
+      "owner_department": "Đối ngoại",
+      "notes": "Liên hệ doanh nghiệp, ký hợp đồng booth, gói tài trợ và phối hợp setup."
+    },
+    {
+      "name": "Xin duyệt IC-PDP",
+      "owner_department": "BTC/IC",
+      "notes": "Soạn hồ sơ xin duyệt sự kiện trước ngày diễn ra 20 ngày."
+    },
+    {
+      "name": "An toàn & PCCC",
+      "owner_department": "Hậu cần",
+      "notes": "Đảm bảo phương án an toàn, kiểm tra điện, cấp cứu, và PCCC."
+    },
+    {
+      "name": "Phương án thời tiết xấu",
+      "owner_department": "Hậu cần",
+      "notes": "Chuẩn bị dù, mái che, và kế hoạch dự phòng nếu trời mưa."
+    },
+    {
+      "name": "Đón tiếp khách mời VIP",
+      "owner_department": "Đối ngoại",
+      "notes": "Chuẩn bị khu vực tiếp khách, lịch trình di chuyển và quà tặng."
+    }
+  ]
+}
