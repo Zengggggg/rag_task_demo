@@ -1,17 +1,21 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, HTTPException
+from models.schemas import EventInput
 from services.pipeline import run_pipeline
 
-app = FastAPI(title="RAG Task Generator Demo")
+app = FastAPI(title="Task Generation RAG API")
 
 @app.post("/generate-tasks")
-def generate_tasks(event_input: dict = Body(...)):
-    """
-    Input ví dụ:
-    {
-      "name": "Ngày hội việc làm K2C7",
-      "description": "Sự kiện outdoor có doanh nghiệp và khách mời VIP",
-      "event_type_guess": "Career Fair"
-    }
-    """
-    result = run_pipeline(event_input)
+def generate_tasks(payload: EventInput):
+    # Chỉ chấp nhận format phẳng (không có trường 'event')
+    # FastAPI sẽ tự 422 nếu client gửi {"event": {...}}
+    data = payload.model_dump(exclude_none=True)
+
+    if not (data.get("name") or data.get("description")):
+        raise HTTPException(status_code=400, detail="Missing 'name' or 'description'")
+
+    result = run_pipeline(data)
     return result
+
+@app.get("/")
+def root():
+    return {"message": "RAG Task Generator API is running"}
