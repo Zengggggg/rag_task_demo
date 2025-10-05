@@ -24,6 +24,8 @@ rag_task_demo/
 ├─ .env # Chứa OPENAI_API_KEY và cấu hình model
 ├─ .gitignore # Bỏ qua .env, cache, venv, logs
 │
+├─ chroma_db/
+|
 ├─ kb/
 │ ├─ global/ # Knowledge Base toàn cục (chuẩn loại sự kiện)
 │ │ ├─ career_fair.json
@@ -31,6 +33,12 @@ rag_task_demo/
 │ │ └─ concert_festival.json
 │ └─ user/ # (Tùy chọn) dữ liệu riêng từng người dùng
 │
+├─ models/
+|  └─ schemas.py # Quy ước dữ liệu trả về
+|
+├─ scripts/
+|  └─ ingest_global_chroma.py # Chunking tài liệu và đưa vào vector DB
+|
 ├─ services/
 │ ├─ pipeline.py # Điều phối pipeline (retriever → LLM → parser)
 │ ├─ retriever.py # Xử lý embedding & truy hồi tài liệu KB
