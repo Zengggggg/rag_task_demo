@@ -4,7 +4,9 @@ from typing import List, Dict, Any, Optional
 
 import chromadb
 from sentence_transformers import SentenceTransformer
-
+# services/retriever.py
+import logging
+logger = logging.getLogger("uvicorn.error")
 
 # ====== ENV / DEFAULTS ======
 EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
@@ -42,27 +44,42 @@ def _get_collection():
 
 
 def _build_filters(event_input: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    if event_input.get("has_vip"):
-        return {"tag_vip": {"$eq": True}}
-    if event_input.get("has_sponsor"):
-        return {"tag_sponsor": {"$eq": True}}
-    if event_input.get("outdoor"):
-        return {"tag_outdoor": {"$eq": True}}
-    etg = (event_input.get("event_type_guess") or "").strip()
+    """
+    TODO:
+    - Xem xét thêm các filter khác (nếu có trong metadata)
+    - Xem xét thêm logic kết hợp nhiều doc (top-k) cho context
+    - Xem xét thêm logic threshold similarity (nếu cần)
+    Hiện tại đang không filter.
+    """
+    clauses = []
+
+    # chỉ add khi True
+    if event_input.get("has_vip") is True:
+        clauses.append({"tag_vip": {"$eq": True}})
+    if event_input.get("has_sponsor") is True:
+        clauses.append({"tag_sponsor": {"$eq": True}})
+    if event_input.get("outdoor") is True:
+        clauses.append({"tag_outdoor": {"$eq": True}})
+
+    # so sánh lowercase để tránh lệch hoa/thường
+    etg = (event_input.get("event_type_guess") or "").strip().lower()
     if etg:
-        return {"event_type_primary": {"$eq": etg}}
+        clauses.append({"event_type_primary_lower": {"$eq": etg}})
+
+    if not clauses:
+        return None
+    if len(clauses) == 1:
+        return clauses[0]
     return None
+
+
 
 
 def retrieve_global_passages(
     query: str,
-    top_k: int = 12,
+    top_k: int = 1,
     filters: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
-    """
-    Tìm văn bản gần nhất trong Global KB (Chroma).
-    Trả về: [{ doc_id, text, metadata }]
-    """
     if not query or not query.strip():
         return []
 
@@ -70,26 +87,55 @@ def retrieve_global_passages(
     embedder = _get_embedder()
 
     q_emb = embedder.encode([query]).tolist()[0]
+
+    # ===== DEBUG START =====
+    print("🧩 Query:", query[:100], flush=True)
+    print("🔍 Filters:", filters, flush=True)
+    # ===== DEBUG END =====
+
+    # include để lấy thêm distances/scores + docs/metas
     res = collection.query(
         query_embeddings=[q_emb],
         n_results=top_k,
-        where=filters or {},
+        where=(filters if filters else None),
+        include=["documents", "metadatas", "distances"]
     )
 
-    if not res or not res.get("ids") or not res["ids"]:
+    ids = res.get("ids") or []
+    if not ids or not ids[0]:
+        print("📦 Retrieved IDs: []", flush=True)
         return []
 
+    top_id   = ids[0][0]
+    top_dist = (res.get("distances") or [[None]])[0][0]
+    top_meta = (res.get("metadatas") or [[{}]])[0][0] or {}
+    top_title = top_meta.get("title") or top_meta.get("name") or top_meta.get("slug") or ""
+
+    print(f"🏆 Top Retrieved ID: {top_id} | distance={top_dist}", flush=True)
+    if top_title:
+        print(f"   ↳ title: {top_title}", flush=True)
+    print("📦 Retrieved IDs (sorted):", ids[0], flush=True)
+
+    # Chuẩn hoá output
     out: List[Dict[str, Any]] = []
-    for i in range(len(res["ids"][0])):
-        meta = res["metadatas"][0][i] if res.get("metadatas") else {}
-        # Khi ingest, ta upsert ids=doc_id → có thể lấy trực tiếp
-        doc_id = res["ids"][0][i]
-        text = res["documents"][0][i] if res.get("documents") else ""
-        # Gắn doc_id vào metadata cho tiện debug (không bắt buộc)
+    docs = res.get("documents") or [[]]
+    metas = res.get("metadatas") or [[]]
+    dists = res.get("distances") or [[]]
+
+    for i in range(len(ids[0])):
+        doc_id = ids[0][i]
+        text = docs[0][i] if len(docs[0]) > i else ""
+        meta = metas[0][i] if len(metas[0]) > i else {}
+        dist = dists[0][i] if len(dists[0]) > i else None
         if isinstance(meta, dict):
             meta.setdefault("doc_id", doc_id)
+            if dist is not None:
+                meta["distance"] = dist
         out.append({"doc_id": doc_id, "text": text, "metadata": meta})
+
     return out
+
+
 
 
 def retrieve_docs(event_input: Dict[str, Any], top_k: int = 12) -> List[Dict[str, Any]]:

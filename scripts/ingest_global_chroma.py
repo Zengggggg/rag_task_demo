@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 import chromadb
 
 # ====== Cấu hình ======
-DATA_DIR = "./data/global_kb"        # Thư mục chứa các file JSON tài liệu
+DATA_DIR = "./kb/global"        # Thư mục chứa các file JSON tài liệu
 CHROMA_DIR = "./chroma_db"           # Thư mục lưu vector database
 COLLECTION_NAME = "global_kb"        # Tên collection trong Chroma
 EMBED_MODEL = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
@@ -24,16 +24,30 @@ def get_embedder():
 
 # ====== Hàm xử lý ======
 def build_metadata(doc: dict):
-    """Chuyển dữ liệu context thành metadata phẳng, tương thích Chroma 1.1.x"""
     ctx_tags = doc.get("context_tags", [])
     etypes = doc.get("event_type", [])
+    primary = etypes[0].strip() if etypes else ""
 
     return {
-        "event_type_primary": etypes[0] if etypes else "",
+        "event_type_primary": primary,
+        "event_type_primary_lower": primary.lower(),  # 👈 bắt buộc
         "tag_vip": "vip" in ctx_tags,
         "tag_sponsor": "sponsor" in ctx_tags,
         "tag_outdoor": "outdoor" in ctx_tags,
     }
+def build_metadata(doc: dict):
+    ctx_tags = doc.get("context_tags", [])
+    etypes = doc.get("event_type", [])
+    primary = etypes[0].strip() if etypes else ""
+
+    return {
+        "event_type_primary": primary,
+        "event_type_primary_lower": primary.lower(),  # 👈 bắt buộc
+        "tag_vip": "vip" in ctx_tags,
+        "tag_sponsor": "sponsor" in ctx_tags,
+        "tag_outdoor": "outdoor" in ctx_tags,
+    }
+
 
 
 def ingest():

@@ -1,6 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from models.schemas import EventInput
 from services.pipeline import run_pipeline
+import logging
+logging.basicConfig(
+    level=logging.INFO,  # hoặc DEBUG
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
+logger = logging.getLogger("uvicorn.error")  # bám theo logger của uvicorn
+logger.setLevel(logging.DEBUG)
 
 app = FastAPI(title="Task Generation RAG API")
 
